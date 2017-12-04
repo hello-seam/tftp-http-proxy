@@ -1,0 +1,14 @@
+[Unit]
+Description=TFTP to HTTP proxy
+Documentation=https://github.com/bwalex/tftp-http-proxy
+After=network.target
+
+[Service]
+EnvironmentFile=-/etc/default/%p
+ExecStart=/usr/sbin/tftp-http-proxy $DAEMON_ARGS
+Restart=on-failure
+Type=notify
+SyslogFacility=local5
+
+[Install]
+WantedBy=multi-user.target

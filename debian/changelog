@@ -1,0 +1,6 @@
+tftp-http-proxy (0.4-1) unstable; urgency=medium
+
+  * Compiled and packaged from github sources
+  * Added systemd support
+
+ -- Tomas Ebenlendr <tomas.ebenlendr@centrumholdings.com>  Tue, 26 Mar 2019 22:41:53 +0100

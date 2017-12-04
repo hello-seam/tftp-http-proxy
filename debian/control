@@ -1,0 +1,29 @@
+Source: tftp-http-proxy
+Section: admin
+Priority: optional
+Maintainer: Tomas Ebenlendr <tomas.ebenlendr@economia.cz>
+Uploaders: Tomas Ebenlendr <tomas.ebenlendr@economia.cz>
+Build-Depends: golang-go (>=1.7), debhelper (>= 9)
+Standards-Version: 3.9.8
+Homepage: https://github.com/bwalex/tftp-http-proxy
+Vcs-Browser: https://github.com/bwalex/tftp-http-proxy
+Vcs-Git: https://github.com/bwalex/tftp-http-proxy
+
+Package: tftp-http-proxy
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Simple tftp to http proxy
+ tftp-http-proxy is a simple TFTP server that proxies all read
+ requests to a backing HTTP server, and serves the response.
+
+Package: tftp-http-proxy-systemd
+Architecture: all
+Depends: systemd, tftp-http-proxy
+Provides: tftp-http-proxy-service
+Description: Simple tftp to http proxy - systemd service
+
+Package: tftp-http-proxy-sysvinit
+Architecture: all
+Depends: sysvinit, tftp-http-proxy, daemon
+Provides: tftp-http-proxy-service
+Description: Simple tftp to http proxy - sysv init script
