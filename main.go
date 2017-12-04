@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 	"github.com/pin/tftp"
+	systemd "github.com/coreos/go-systemd/daemon"
 )
 
 const httpBaseUrlDefault = "http://127.0.0.1/tftp"
@@ -113,8 +114,17 @@ func main() {
 
 	s := tftp.NewServer(tftpReadHandler, nil)
 	s.SetTimeout(*tftpTimeoutPtr)
-	log.Printf("Listening TFTP requests on: %s", *bindAddrPtr)
-	err := s.ListenAndServe(*bindAddrPtr)
+	err := s.ListenAndServe2(*bindAddrPtr, func() {
+		log.Printf("INFO: Listening TFTP requests on: %s", *bindAddrPtr)
+		sent, err := systemd.SdNotify(true, "READY=1\n");
+		if err != nil {
+			log.Printf("WARN: Unable to send systemd daemon successful start message: %v\n", err)
+		} else if (sent) {
+			log.Printf("DEBUG: Systemd was notified.\n")
+		} else {
+			log.Printf("DEBUG: Systemd notifications are not supported.\n")
+		}
+	})
 	if err != nil {
 		log.Panicf("FATAL: tftp server: %v\n", err)
 	}
