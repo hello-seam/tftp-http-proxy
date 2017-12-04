@@ -18,3 +18,4 @@ $(BASE):
 .PHONY: clean
 clean:
 	rm -f $(PROG)
+	rm -rf dist .gopath
