@@ -64,6 +64,10 @@ func (s *Server) SetBackoff(h backoffFunc) {
 // ListenAndServe binds to address provided and start the server.
 // ListenAndServe returns when Shutdown is called.
 func (s *Server) ListenAndServe(addr string) error {
+	return s.ListenAndServe2(addr, func(){})
+}
+
+func (s *Server) ListenAndServe2(addr string, upAndRunning func() ) error {
 	a, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		return err
@@ -72,7 +76,7 @@ func (s *Server) ListenAndServe(addr string) error {
 	if err != nil {
 		return err
 	}
-	s.Serve(conn)
+	s.Serve(conn, upAndRunning)
 	return nil
 }
 
@@ -80,9 +84,10 @@ func (s *Server) ListenAndServe(addr string) error {
 // useful for the case when you want to run server in separate goroutine
 // but still want to be able to handle any errors opening connection.
 // Serve returns when Shutdown is called or connection is closed.
-func (s *Server) Serve(conn *net.UDPConn) {
+func (s *Server) Serve(conn *net.UDPConn, upAndRunning func()) {
 	s.conn = conn
 	s.quit = make(chan chan struct{})
+	upAndRunning()
 	for {
 		select {
 		case q := <-s.quit:
