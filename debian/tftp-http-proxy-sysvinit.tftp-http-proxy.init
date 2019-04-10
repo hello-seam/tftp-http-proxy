@@ -15,6 +15,9 @@ DAEMON_ARGS=""
 if test -r /etc/default/tftp-http-proxy; then
   . /etc/default/tftp-http-proxy
 fi
+
+. /lib/lsb/init-functions
+
 NAME=tftp-http-proxy
 DAEMON=/usr/sbin/tftp-http-proxy
 DESCROPTION="TFTP to HTTP proxy"
@@ -22,7 +25,8 @@ DESCROPTION="TFTP to HTTP proxy"
 startstop() {
   daemon -N -n "$NAME" -r -l local5.err -b local5.notice -O local5.info -E local5.warning $1 -- "$DAEMON" $DAEMON_ARGS
 }
-log_startstop() {
+
+log_start_stop() {
   log_daemon_msg "$2 $DESCRIPTION" "$NAME"
   if startstop "$1"; then
     log_end_msg 0
@@ -34,6 +38,12 @@ log_startstop() {
 case "$1" in
   start)   log_start_stop ""          Starting   ;;
   stop)    log_start_stop "--stop"    Stopping   ;;
-  restart) log_start_stop "--restart" Restarting ;;
+  reload)  log_start_stop "--restart" Reloading  ;;
+  restart)
+	   if startstop "--running"; then
+	      log_start_stop "--stop"    Stopping
+	   fi
+	   log_start_stop ""          Starting
+  ;;
   status)  startstop "--verbose --running" ;;
 esac

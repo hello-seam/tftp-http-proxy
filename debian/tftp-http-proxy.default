@@ -1,2 +1,2 @@
 # Default args:
-# DAEMON_ARGS="-http-append-path true -http-base-url http://127.0.0.1/dhcp/ -tftp-bind-address :69 -tftp-timeout 5s"
+# DAEMON_ARGS="-http-base-url http://127.0.0.1/dhcp/ -http-append-path true -tftp-bind-address :69 -tftp-timeout 5s"
