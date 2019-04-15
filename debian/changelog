@@ -1,3 +1,9 @@
+tftp-http-proxy (0.4-2) unstable; urgency=medium
+
+  * Do not interpret tftp request as absolute url.
+
+ -- Tomas Ebenlendr <tomas.ebenlendr@centrumholdings.com>  Mon, 15 Apr 2019 13:56:47 +0200
+
 tftp-http-proxy (0.4-1) unstable; urgency=medium
 
   * Compiled and packaged from github sources
