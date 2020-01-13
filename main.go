@@ -16,16 +16,20 @@ import (
 const httpBaseUrlDefault = "http://127.0.0.1/tftp"
 const tftpTimeoutDefault = 5 * time.Second
 const tftpBindAddrDefault = ":69"
-const appendPathDefault = false
+const appendPathDefault = true
 
 var globalState = struct {
 	httpBaseUrl	string
 	httpClient	*http.Client
 	appendPath	bool
+	authUsername    string
+	authPassword    string
 }{
 	httpBaseUrl:	httpBaseUrlDefault,
 	httpClient:	nil,
 	appendPath:	appendPathDefault,
+	authUsername:   "",
+	authPassword:   "",
 }
 
 func tftpReadHandler(filename string, rf io.ReaderFrom) error {
@@ -48,10 +52,13 @@ func tftpReadHandler(filename string, rf io.ReaderFrom) error {
 		log.Printf("ERR: http request setup failed: %v", err)
 		return err
 	}
+        log.Printf("URI: %s", uri)
 	req.Header.Add("X-TFTP-IP", raddr.IP.String())
 	req.Header.Add("X-TFTP-Port", fmt.Sprintf("%d", raddr.Port))
 	req.Header.Add("X-TFTP-File", filename)
-
+	if globalState.authUsername != "" {
+		req.SetBasicAuth(globalState.authUsername, globalState.authPassword)
+	}
 	resp, err := globalState.httpClient.Do(req)
 	if err != nil {
 		log.Printf("ERR: http request failed: %v", err)
@@ -105,12 +112,16 @@ func main() {
 	appendPathPtr := flag.Bool("http-append-path", appendPathDefault, "append TFTP filename to URL")
 	tftpTimeoutPtr := flag.Duration("tftp-timeout", tftpTimeoutDefault, "TFTP timeout")
 	bindAddrPtr := flag.String("tftp-bind-address", tftpBindAddrDefault, "TFTP addr to bind to")
+	authUsername := flag.String("http-auth-user", "" , "HTTP auth user")
+	authPassword := flag.String("http-auth-pass", "" , "HTTP auth password")
 
 	flag.Parse()
 
 	globalState.httpBaseUrl = parseBaseURL(*httpBaseUrlPtr, *appendPathPtr)
 	globalState.httpClient = &http.Client{}
 	globalState.appendPath = *appendPathPtr
+	globalState.authUsername = *authUsername
+	globalState.authPassword = *authPassword
 
 	s := tftp.NewServer(tftpReadHandler, nil)
 	s.SetTimeout(*tftpTimeoutPtr)
