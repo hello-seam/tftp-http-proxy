@@ -10,7 +10,7 @@ RUN make
 
 FROM debian:bullseye-slim
 
-RUN apt-get update && apt-get install -y dumb-init gosu libcap2-bin && apt-get clean
+RUN apt-get update && apt-get install -y ca-certificates dumb-init gosu libcap2-bin && apt-get clean
 
 COPY entrypoint.sh /usr/sbin/entrypoint.sh
 COPY --from=build /usr/src/tftp-http-proxy/dist/tftp-http-proxy /usr/bin/tftp-http-proxy
