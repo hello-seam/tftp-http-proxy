@@ -39,7 +39,11 @@ jobs:
 
       - name: Set container tag
         run: |
-          echo "CONTAINER_TAG=${GITHUB_HEAD_REF:-$GITHUB_REF}" | sed -e 's#^refs/heads/##' | sed -e 's#[^A-Za-z0-9]\+#.#' >> "$GITHUB_ENV"
+          CONTAINER_TAG=$(echo "${GITHUB_HEAD_REF:-$GITHUB_REF}" | sed -e 's#^refs/heads/##' | sed -e 's#[^A-Za-z0-9]\+#.#')
+          if [ "$CONTAINER_TAG" = "main" ]; then
+            CONTAINER_TAG=latest
+          fi
+          echo "CONTAINER_TAG=$CONTAINER_TAG" >> "$GITHUB_ENV"
 
       - name: Build and push
         uses: docker/build-push-action@v2
